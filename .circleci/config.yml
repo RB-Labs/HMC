@@ -19,7 +19,7 @@ jobs:
             %userprofile%\.dotnet\tools\libman restore
           working_directory: App
       - run:
-          name: "Restore"
+          name: "Restore App Packages"
           command: dotnet restore
           working_directory: App
       - run:
@@ -44,3 +44,15 @@ jobs:
           name: "Build"
           command: dotnet build -c Release
           working_directory: App
+      - run:
+          name: "Restore App.Tests Packages"
+          command: dotnet restore
+          working_directory: App.Tests
+      - run:
+          name: "Build Tests"
+          command: dotnet build -c Release
+          working_directory: App
+      - run:
+          name: "Run Tests"
+          command: dotnet tests
+          working_directory: App.Tests
