@@ -11,6 +11,14 @@ jobs:
     steps:
       - checkout
       - run:
+          name: "Install libman"
+          command: dotnet tool install -g Microsoft.Web.LibraryManager.Cli
+      - run:
+          name: "Restore Client-Side libraries"
+          command: |
+            %userprofile%\.dotnet\tools\libman restore
+          working_directory: App
+      - run:
           name: "Restore"
           command: dotnet restore
           working_directory: App
