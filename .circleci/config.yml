@@ -23,6 +23,24 @@ jobs:
           command: dotnet restore
           working_directory: App
       - run:
+          name: "Install Entity Framework tool"
+          command: dotnet tool install -g dotnet-ef
+      - run:
+          name: "Add Initial migration"
+          command: |
+            %userprofile%\.dotnet\tools\dotnet-ef migrations add InitialMigration
+          working_directory: App
+      - run:
+          name: "Drop Database"
+          command: |
+            %userprofile%\.dotnet\tools\dotnet-ef database drop -f
+          working_directory: App
+      - run:
+          name: "Update Database"
+          command: |
+            %userprofile%\.dotnet\tools\dotnet-ef database update
+          working_directory: App
+      - run:
           name: "Build"
           command: dotnet build -c Release
           working_directory: App
