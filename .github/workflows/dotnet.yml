@@ -25,6 +25,17 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
       working-directory: App
+    - name: Install Entity Framework tool
+      run: dotnet tool install -g dotnet-ef
+    - name: Add Initial migration
+      run: dotnet ef migrations add InitialMigration
+      working-directory: App
+    - name: Drop Database
+      run: dotnet ef database drop -f
+      working-directory: App
+    - name: Update Database
+      run: dotnet ef database update
+      working-directory: App
     - name: Build
       run: dotnet build -c Release
       working-directory: App
