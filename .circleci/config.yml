@@ -54,5 +54,5 @@ jobs:
           working_directory: App
       - run:
           name: "Run Tests"
-          command: dotnet tests
+          command: dotnet test
           working_directory: App.Tests
