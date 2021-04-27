@@ -39,3 +39,12 @@ jobs:
     - name: Build
       run: dotnet build -c Release
       working-directory: App
+    - name: Restore App.Tests Packages
+      run: dotnet restore
+      working-directory: App.Tests
+    - name: Build Tests
+      run: dotnet build -c Release
+      working-directory: App.Tests
+    - name: Run Tests
+      run: dotnet test
+      working-directory: App.Tests
