@@ -1,0 +1,20 @@
+version: 2.1
+
+orbs:
+  win: circleci/windows@2.4.0
+
+jobs:
+  build:
+    executor:
+      name: win/default
+      shell: cmd.exe
+    steps:
+      - checkout
+      - run:
+          name: "Restore"
+          command: dotnet restore
+          working_directory: App
+      - run:
+          name: "Build"
+          command: dotnet build -c Release
+          working_directory: App
