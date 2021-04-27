@@ -3,3 +3,5 @@
 /.vs
 /App/wwwroot/lib
 /App/App.csproj.user
+/App.Tests/bin
+/App.Tests/obj
