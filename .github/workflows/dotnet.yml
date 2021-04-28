@@ -61,13 +61,13 @@ jobs:
       working-directory: App.Tests
 
     - name: Publish
-      run: dotnet publish -c Release -o \${{env.DOTNET_ROOT}}/hmc_app
+      run: dotnet publish -c Release -o ../hmc_app
 
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v2
       with:
         name: .net-app
-        path: \${{env.DOTNET_ROOT}}/hmc_app
+        path: ../hmc_app
   
   deploy:
     runs-on: windows-latest
