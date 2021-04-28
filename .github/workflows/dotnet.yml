@@ -74,7 +74,7 @@ jobs:
     needs: build
     environment:
       name: 'production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+      url: ${{env.AZUREAPPSERVICE_PUBLISHURL}}
 
     steps:
       - name: Download artifact from build job
@@ -88,5 +88,5 @@ jobs:
         with:
           app-name: 'hmc-rb-labs'
           slot-name: 'production'
-          publish-profile: \${{ secrets.AzureAppService_PublishProfile_1234 }}
+          publish-profile: ${{env.AZUREAPPSERVICE_PUBLISHPROFILE}}
           package: .
