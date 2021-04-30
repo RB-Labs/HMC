@@ -10,5 +10,7 @@ namespace App.Data
             : base(options)
         {
         }
+
+        public DbSet<ArticleCategory> ArticleCategories { get; set; }
     }
 }
