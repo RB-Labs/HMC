@@ -24,8 +24,4 @@
     <ProjectReference Include="..\App\App.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
-
 </Project>
