@@ -60,6 +60,8 @@ namespace App.Tests.Models
             user.Email = "user2-new@mail.com";
             var updateResult = _context.Users.Update(user);
             Assert.NotNull(updateResult);
+            entitiesCount = _context.SaveChanges();
+            Assert.Equal(1, entitiesCount);
             user = await _context.Users
                 .FirstOrDefaultAsync(m => m.UserName == "User2");
             Assert.NotNull(user);
