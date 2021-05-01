@@ -6,4 +6,6 @@
 
 ![Workflow](https://github.com/RB-Labs/HMC/actions/workflows/dotnet.yml/badge.svg)
 
+[![Build status](https://ci.appveyor.com/api/projects/status/8so83kwkhrkg2ofl?svg=true)](https://ci.appveyor.com/project/arusskina/hmc)
+
 [![CircleCI](https://circleci.com/gh/RB-Labs/HMC.svg?style=svg)](https://circleci.com/gh/RB-Labs/HMC)
