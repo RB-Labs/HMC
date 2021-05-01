@@ -12,7 +12,7 @@ namespace App.Tests.Controllers
 {
     public class ArticleCategoriesControllerTests
     {
-        ApplicationDbContext _context;
+        readonly ApplicationDbContext _context;
         public ArticleCategoriesControllerTests()
         {
             var serviceProvider = new ServiceCollection()
@@ -29,7 +29,7 @@ namespace App.Tests.Controllers
         [Fact]
         public async void IndexArticleCategoryViewResultNotNull()
         {
-            ArticleCategoriesController controller = new ArticleCategoriesController(_context);
+            ArticleCategoriesController controller = new(_context);
             ViewResult result = await controller.Index() as ViewResult;
             Assert.NotNull(result);
         }
@@ -37,20 +37,21 @@ namespace App.Tests.Controllers
         [Fact]
         public async void IndexArticleCategoryViewDataNotNull()
         {
-            var addResult = _context.ArticleCategories.Add(new ArticleCategory
-            {
+            ArticleCategoriesController controller = new(_context);
+            ArticleCategory newArticleCategory = new()
+            { 
                 Name = "Category 1"
-            });
-            Assert.NotNull(addResult);
+            };
+            var createResult = await controller.Create(newArticleCategory) as RedirectToActionResult;
+            Assert.NotNull(createResult);
+            Assert.Equal("Index", createResult.ActionName);
             int entitiesCount = _context.SaveChanges();
-            Assert.Equal(1, entitiesCount);
             var articleCategory = await _context.ArticleCategories
                 .FirstOrDefaultAsync(x => x.Name == "Category 1");
             Assert.NotNull(articleCategory);
-            ArticleCategoriesController controller = new ArticleCategoriesController(_context);
-            ViewResult result = await controller.Index() as ViewResult;
-            Assert.NotNull(result);
-            var categoryList = result.Model as IEnumerable<ArticleCategory>;
+            ViewResult indexResult = await controller.Index() as ViewResult;
+            Assert.NotNull(indexResult);
+            var categoryList = indexResult.Model as IEnumerable<ArticleCategory>;
             Assert.NotNull(categoryList);
             var category = categoryList.FirstOrDefault(x => x.Name == "Category 1");
             Assert.NotNull(category);
@@ -60,7 +61,7 @@ namespace App.Tests.Controllers
         [Fact]
         public void CreateArticleCategoryViewResultNotNull()
         {
-            ArticleCategoriesController controller = new ArticleCategoriesController(_context);
+            ArticleCategoriesController controller = new(_context);
             var result = controller.Create() as ViewResult;
             Assert.NotNull(result);
         }
@@ -68,11 +69,12 @@ namespace App.Tests.Controllers
         [Fact]
         public async void CreateArticleCategoryViewDataNotNull()
         {
-            ArticleCategoriesController controller = new ArticleCategoriesController(_context);
-            ArticleCategory newArticleCategory = new ArticleCategory { Name = "Category 2" };
+            ArticleCategoriesController controller = new(_context);
+            ArticleCategory newArticleCategory = new() { Name = "Category 2" };
             var result = await controller.Create(newArticleCategory) as RedirectToActionResult;
             Assert.NotNull(result);
             Assert.Equal("Index", result.ActionName);
+            int entitiesCount = _context.SaveChanges();
             var articleCategory = await _context.ArticleCategories
                 .FirstOrDefaultAsync(m => m.Name == "Category 2");
             Assert.NotNull(articleCategory);
@@ -81,20 +83,18 @@ namespace App.Tests.Controllers
         [Fact]
         public async void DetailsArticleCategoryViewResultNotNull()
         {
-            var addResult = _context.ArticleCategories.Add(new ArticleCategory
-            {
-                Name = "Category 3"
-            });
-            Assert.NotNull(addResult);
+            ArticleCategoriesController controller = new(_context);
+            ArticleCategory newArticleCategory = new() { Name = "Category 3" };
+            var createResult = await controller.Create(newArticleCategory) as RedirectToActionResult;
+            Assert.NotNull(createResult);
+            Assert.Equal("Index", createResult.ActionName);
             int entitiesCount = _context.SaveChanges();
-            Assert.Equal(1, entitiesCount);
             var articleCategory = await _context.ArticleCategories
                 .FirstOrDefaultAsync(m => m.Name == "Category 3");
             Assert.NotNull(articleCategory);
-            ArticleCategoriesController controller = new ArticleCategoriesController(_context);
-            var result = await controller.Details(articleCategory.Id) as ViewResult;
-            Assert.NotNull(result);
-            var articleCategoryDetails = result.Model as ArticleCategory;
+            var detailsResult = await controller.Details(articleCategory.Id) as ViewResult;
+            Assert.NotNull(detailsResult);
+            var articleCategoryDetails = detailsResult.Model as ArticleCategory;
             Assert.NotNull(articleCategoryDetails);
             Assert.Equal("Category 3", articleCategoryDetails.Name);
         }
@@ -102,17 +102,18 @@ namespace App.Tests.Controllers
         [Fact]
         public async void EditArticleCategoryViewResultNotNull()
         {
-            var addResult = _context.ArticleCategories.Add(new ArticleCategory
+            ArticleCategoriesController controller = new(_context);
+            ArticleCategory newArticleCategory = new()
             {
                 Name = "Category 4"
-            });
-            Assert.NotNull(addResult);
+            };
+            var createResult = await controller.Create(newArticleCategory) as RedirectToActionResult;
+            Assert.NotNull(createResult);
+            Assert.Equal("Index", createResult.ActionName);
             int entitiesCount = _context.SaveChanges();
-            Assert.Equal(1, entitiesCount);
             var articleCategory = await _context.ArticleCategories
                 .FirstOrDefaultAsync(m => m.Name == "Category 4");
             Assert.NotNull(articleCategory);
-            ArticleCategoriesController controller = new ArticleCategoriesController(_context);
             var result = await controller.Edit(articleCategory.Id) as ViewResult;
             Assert.NotNull(result);
             var articleCategoryDetails = result.Model as ArticleCategory;
@@ -123,18 +124,19 @@ namespace App.Tests.Controllers
         [Fact]
         public async void EditArticleCategoryViewDataNotNull()
         {
-            var addResult = _context.ArticleCategories.Add(new ArticleCategory
+            ArticleCategoriesController controller = new(_context);
+            ArticleCategory newArticleCategory = new()
             {
                 Name = "Category 5"
-            });
-            Assert.NotNull(addResult);
+            };
+            var createResult = await controller.Create(newArticleCategory) as RedirectToActionResult;
+            Assert.NotNull(createResult);
+            Assert.Equal("Index", createResult.ActionName);
             int entitiesCount = _context.SaveChanges();
-            Assert.Equal(1, entitiesCount);
             var articleCategory = await _context.ArticleCategories
                 .FirstOrDefaultAsync(m => m.Name == "Category 5");
             Assert.NotNull(articleCategory);
             articleCategory.Name = "Category 6";
-            ArticleCategoriesController controller = new ArticleCategoriesController(_context);
             var result = await controller.Edit(articleCategory.Id, articleCategory) as RedirectToActionResult;
             Assert.NotNull(result);
             Assert.Equal("Index", result.ActionName);
@@ -149,8 +151,8 @@ namespace App.Tests.Controllers
         [Fact]
         public async void DeleteArticleCategoryViewResultNotNull()
         {
-            ArticleCategoriesController controller = new ArticleCategoriesController(_context);
-            ArticleCategory newArticleCategory = new ArticleCategory { Name = "Category 7" };
+            ArticleCategoriesController controller = new(_context);
+            ArticleCategory newArticleCategory = new() { Name = "Category 7" };
             var result = await controller.Create(newArticleCategory) as RedirectToActionResult;
             Assert.NotNull(result);
             Assert.Equal("Index", result.ActionName);
