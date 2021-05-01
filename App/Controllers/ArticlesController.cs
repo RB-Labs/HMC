@@ -1,7 +1,10 @@
 ﻿using App.Data;
 using App.Models;
+using App.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,7 +21,11 @@ namespace App.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Articles.ToListAsync());
+            var articles = await _context.Articles
+                .Include(x => x.Category)
+                .Include(x => x.Author)
+                .ToListAsync();
+            return View(articles);
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -29,7 +36,9 @@ namespace App.Controllers
             }
 
             var article = await _context.Articles
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(x => x.Category)
+                .Include(x => x.Author)
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (article == null)
             {
                 return NotFound();
@@ -38,24 +47,28 @@ namespace App.Controllers
             return View(article);
         }
 
+        [Authorize]
         public IActionResult Create()
         {
-            return View();
+            var model = new ArticleViewModel(_context.ArticleCategories.ToList());
+            return View(model);
         }
 
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Id,Name,Text,CreationDate")] Article article)
+        public IActionResult Create([Bind("Name,Text,CategoryId")] ArticleViewModel model)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(article);
+                _context.Add(ToArticle(model));
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
-            return View(article);
+            return View(model);
         }
 
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -63,19 +76,23 @@ namespace App.Controllers
                 return NotFound();
             }
 
-            var article = await _context.Articles.FindAsync(id);
+            var article = await _context.Articles
+                .Include(x => x.Category)
+                .Include(x => x.Author)
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (article == null)
             {
                 return NotFound();
             }
-            return View(article);
+            return View(ToArticleViewModel(article));
         }
 
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, [Bind("Id,Name,Text,CreationDate")] Article article)
+        public IActionResult Edit(int id, [Bind("Id,Name,Text,CategoryId")] ArticleViewModel model)
         {
-            if (id != article.Id)
+            if (id != model.Id)
             {
                 return NotFound();
             }
@@ -84,12 +101,14 @@ namespace App.Controllers
             {
                 try
                 {
+                    var article = ToArticle(model);
+                    article.Id = id;
                     _context.Update(article);
                     _context.SaveChanges();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ArticleExists(article.Id))
+                    if (!ArticleExists(model.Id))
                     {
                         return NotFound();
                     }
@@ -100,9 +119,10 @@ namespace App.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(article);
+            return View(model);
         }
 
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -111,7 +131,7 @@ namespace App.Controllers
             }
 
             var article = await _context.Articles
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (article == null)
             {
                 return NotFound();
@@ -120,6 +140,7 @@ namespace App.Controllers
             return View(article);
         }
 
+        [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -133,6 +154,31 @@ namespace App.Controllers
         private bool ArticleExists(int id)
         {
             return _context.Articles.Any(e => e.Id == id);
+        }
+
+        private Article ToArticle(ArticleViewModel model)
+        {
+            var currentUser = _context.Users.Single(x => x.UserName == User.Identity.Name);
+            var categoryId = Convert.ToInt32(model.CategoryId);
+            var category = _context.ArticleCategories.Single(x => x.Id == categoryId);
+            return new Article
+            {
+                Author = currentUser,
+                Category = category,
+                CreationDate = DateTime.Now,
+                Name = model.Name,
+                Text = model.Text
+            };
+        }
+
+        private ArticleViewModel ToArticleViewModel(Article article)
+        {
+            var model = new ArticleViewModel(_context.ArticleCategories.ToList());
+            model.Id = article.Id;
+            model.Name = article.Name;
+            model.Text = article.Text;
+            model.CategoryId = article.Category.Id.ToString();
+            return model;
         }
     }
 }

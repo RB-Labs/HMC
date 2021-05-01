@@ -1,4 +1,4 @@
-﻿@model App.Models.Article
+﻿@model App.ViewModels.ArticleViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -24,9 +24,7 @@
                 <span asp-validation-for="Text" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CreationDate" class="control-label"></label>
-                <input asp-for="CreationDate" class="form-control" />
-                <span asp-validation-for="CreationDate" class="text-danger"></span>
+                <select asp-for="CategoryId" asp-items="Model.Categories" class="custom-select"></select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

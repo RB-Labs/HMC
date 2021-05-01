@@ -19,6 +19,12 @@
                 @Html.DisplayNameFor(model => model.Text)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Category.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Author.UserName)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.CreationDate)
             </th>
             <th></th>
@@ -32,6 +38,12 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Text)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Author.UserName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CreationDate)
