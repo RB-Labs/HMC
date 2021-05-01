@@ -1,0 +1,19 @@
+image: Visual Studio 2019
+  
+version: '{build}'
+
+build_script:
+- cmd: cd App
+- dotnet tool install -g Microsoft.Web.LibraryManager.Cli
+- libman restore
+- dotnet restore
+- dotnet tool install -g dotnet-ef
+- dotnet ef migrations add InitialMigration
+- dotnet ef database drop -f
+- dotnet ef database update
+- dotnet build -c Release
+
+test_script:
+- cmd: cd ../App.Tests
+- dotnet build -c Release
+- dotnet test
