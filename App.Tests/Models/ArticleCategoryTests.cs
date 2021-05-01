@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace App.Tests.Models
 {
+    [Collection("Sequential")]
     public class ArticleCategoryTests : IDisposable
     {
-
-        ApplicationDbContext _context;
+        readonly ApplicationDbContext _context;
 
         public ArticleCategoryTests()
         {

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace App.Tests.Models
 {
+    [Collection("Sequential")]
     public class UserTests : IDisposable
     {
         ApplicationDbContext _context;

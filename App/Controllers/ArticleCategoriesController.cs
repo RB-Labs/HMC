@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using App.Data;
+using App.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using App.Data;
-using App.Models;
 
 namespace App.Controllers
 {
@@ -48,12 +45,12 @@ namespace App.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] ArticleCategory articleCategory)
+        public IActionResult Create([Bind("Id,Name")] ArticleCategory articleCategory)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(articleCategory);
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
             return View(articleCategory);
@@ -76,7 +73,7 @@ namespace App.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] ArticleCategory articleCategory)
+        public IActionResult Edit(int id, [Bind("Id,Name")] ArticleCategory articleCategory)
         {
             if (id != articleCategory.Id)
             {
@@ -88,7 +85,7 @@ namespace App.Controllers
                 try
                 {
                     _context.Update(articleCategory);
-                    await _context.SaveChangesAsync();
+                    _context.SaveChanges();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -129,7 +126,7 @@ namespace App.Controllers
         {
             var articleCategory = await _context.ArticleCategories.FindAsync(id);
             _context.ArticleCategories.Remove(articleCategory);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
 

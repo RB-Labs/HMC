@@ -1,15 +1,12 @@
-﻿using System;
-using Xunit;
-using App.Data;
-using App.Models;
-using App.Controllers;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
+﻿using App.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Xunit;
 
 namespace App.Tests.Controllers
 {
+    [Collection("Sequential")]
     public class HomeControllerTests
     {
         private ILogger<HomeController> _logger;
