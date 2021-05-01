@@ -12,5 +12,7 @@ namespace App.Data
         }
 
         public DbSet<ArticleCategory> ArticleCategories { get; set; }
+
+        public DbSet<Article> Articles { get; set; }
     }
 }
