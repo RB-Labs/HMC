@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace App.Tests.Controllers
@@ -17,16 +18,16 @@ namespace App.Tests.Controllers
     [Collection("Sequential")]
     public class ArticleCategoriesControllerTests : IDisposable
     {
-        readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
         private readonly ArticleCategoriesController _articleCategoriesController;
-        private UserManager<User> _userManager;
+        private readonly UserManager<User> _userManager;
 
         private const string adminEmail = "root@gmail.com";
         private const string adminName = "root";
         private const string adminPassword = "123456";
         public ArticleCategoriesControllerTests()
         {
-            IServiceCollection services = new ServiceCollection();
+            var services = new ServiceCollection();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseInMemoryDatabase("ArticleCategoriesTestDB")
             );
@@ -51,7 +52,7 @@ namespace App.Tests.Controllers
             _userManager = services.BuildServiceProvider()
                 .GetService<UserManager<User>>();
 
-            User admin = new User { UserName = adminName, Email = adminEmail };
+            var admin = new User { UserName = adminName, Email = adminEmail };
             var result = _userManager.CreateAsync(admin, adminPassword);
 
             ControllerContext controllerContext = null;
@@ -62,14 +63,16 @@ namespace App.Tests.Controllers
                     new Claim(ClaimTypes.NameIdentifier, adminName),
                     new Claim(ClaimTypes.Name, adminEmail)
                 }));
-                controllerContext = new ControllerContext()
+                controllerContext = new ControllerContext
                 {
                     HttpContext = new DefaultHttpContext { User = user }
                 };
             }
 
-            _articleCategoriesController = new ArticleCategoriesController(_context);
-            _articleCategoriesController.ControllerContext = controllerContext;
+            _articleCategoriesController = new ArticleCategoriesController(_context)
+            {
+                ControllerContext = controllerContext
+            };
         }
 
         private ArticleCategory CreateArticleCategory(string categoryName)
@@ -83,19 +86,19 @@ namespace App.Tests.Controllers
         }
 
         [Fact]
-        public async void IndexArticleCategoryViewResultNotNull()
+        public async Task IndexArticleCategoryViewResultNotNull()
         {
-            ViewResult result = await _articleCategoriesController.Index() as ViewResult;
+            var result = await _articleCategoriesController.Index() as ViewResult;
             Assert.NotNull(result);
         }
 
         [Fact]
-        public async void IndexArticleCategoryViewDataNotNull()
+        public async Task IndexArticleCategoryViewDataNotNull()
         {
             const string categoryName = "Category 1";
             var newArticleCategory = CreateArticleCategory(categoryName);
             Assert.NotNull(newArticleCategory);
-            ViewResult indexResult = await _articleCategoriesController.Index() as ViewResult;
+            var indexResult = await _articleCategoriesController.Index() as ViewResult;
             Assert.NotNull(indexResult);
             var categoryList = indexResult.Model as IEnumerable<ArticleCategory>;
             Assert.NotNull(categoryList);
@@ -120,7 +123,7 @@ namespace App.Tests.Controllers
         }
 
         [Fact]
-        public async void DetailsArticleCategoryViewResultNotNull()
+        public async Task DetailsArticleCategoryViewResultNotNull()
         {
             const string categoryName = "Category 3";
             var newArticleCategory = CreateArticleCategory(categoryName);
@@ -135,7 +138,7 @@ namespace App.Tests.Controllers
         }
 
         [Fact]
-        public async void EditArticleCategoryViewResultNotNull()
+        public async Task EditArticleCategoryViewResultNotNull()
         {
             const string categoryName = "Controller Category 4";
             var newArticleCategory = CreateArticleCategory(categoryName);
@@ -173,7 +176,7 @@ namespace App.Tests.Controllers
         }
 
         [Fact]
-        public async void DeleteArticleCategoryViewResultNotNull()
+        public async Task DeleteArticleCategoryViewResultNotNull()
         {
             const string categoryName = "Category 6";
             var newArticleCategory = CreateArticleCategory(categoryName);
@@ -188,7 +191,7 @@ namespace App.Tests.Controllers
         }
 
         [Fact]
-        public async void DeleteConfirmedArticleCategoryViewResultNotNull()
+        public async Task DeleteConfirmedArticleCategoryViewResultNotNull()
         {
             const string categoryName = "Category 7";
             var newArticleCategory = CreateArticleCategory(categoryName);
@@ -204,9 +207,8 @@ namespace App.Tests.Controllers
             Assert.Null(deletedArticleCategory);
         }
 
-        public void Dispose()
-        {
-            _context.Database.EnsureDeleted();
-        }
+#pragma warning disable CA1816
+        public void Dispose() => _context.Database.EnsureDeleted();
+#pragma warning restore CA1816
     }
 }

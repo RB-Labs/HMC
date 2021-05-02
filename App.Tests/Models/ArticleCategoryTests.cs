@@ -11,11 +11,11 @@ namespace App.Tests.Models
     [Collection("Sequential")]
     public class ArticleCategoryTests : IDisposable
     {
-        readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
         public ArticleCategoryTests()
         {
-            IServiceCollection services = new ServiceCollection();
+            var services = new ServiceCollection();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseInMemoryDatabase("ArticleTestDB")
             );
@@ -77,10 +77,9 @@ namespace App.Tests.Models
             Assert.Null(deletedArticleCategory);
         }
 
-        public void Dispose()
-        {
-            _context.Database.EnsureDeleted();
-        }
+#pragma warning disable CA1816
+        public void Dispose() => _context.Database.EnsureDeleted();
+#pragma warning restore CA1816
 
     }
 }

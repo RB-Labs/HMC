@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace App.Tests.Controllers
@@ -21,14 +22,14 @@ namespace App.Tests.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ArticlesController _articlesController;
         private readonly ArticleCategoriesController _articleCategoriesController;
-        private UserManager<User> _userManager;
+        private readonly UserManager<User> _userManager;
 
         private const string adminEmail = "root@gmail.com";
         private const string adminName = "root";
         private const string adminPassword = "123456";
         public ArticlesControllerTests()
         {
-            IServiceCollection services = new ServiceCollection();
+            var services = new ServiceCollection();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseInMemoryDatabase("ArticlesTestDB")
             );
@@ -53,7 +54,7 @@ namespace App.Tests.Controllers
             _userManager = services.BuildServiceProvider()
                 .GetService<UserManager<User>>();
 
-            User admin = new User { UserName = adminName, Email = adminEmail };
+            var admin = new User { UserName = adminName, Email = adminEmail };
             var result = _userManager.CreateAsync(admin, adminPassword);
 
             ControllerContext controllerContext = null;
@@ -64,17 +65,21 @@ namespace App.Tests.Controllers
                     new Claim(ClaimTypes.NameIdentifier, adminName),
                     new Claim(ClaimTypes.Name, adminEmail)
                 }));
-                controllerContext = new ControllerContext()
+                controllerContext = new ControllerContext
                 {
                     HttpContext = new DefaultHttpContext { User = user }
                 };
             }
 
-            _articlesController = new ArticlesController(_context);
-            _articlesController.ControllerContext = controllerContext;
+            _articlesController = new ArticlesController(_context)
+            {
+                ControllerContext = controllerContext
+            };
 
-            _articleCategoriesController = new ArticleCategoriesController(_context);
-            _articleCategoriesController.ControllerContext = controllerContext;
+            _articleCategoriesController = new ArticleCategoriesController(_context)
+            {
+                ControllerContext = controllerContext
+            };
         }
 
         private ArticleCategory CreateArticleCategory(string categoryName)
@@ -89,16 +94,18 @@ namespace App.Tests.Controllers
 
         private ArticleViewModel CreateArticleViewModel(string articleName, string articleText, ArticleCategory articleCategory)
         {
-            ArticleViewModel articleViewModel = new ArticleViewModel(_context.ArticleCategories.ToList());
-            articleViewModel.Name = articleName;
-            articleViewModel.Text = articleText;
-            articleViewModel.CategoryId = articleCategory.Id.ToString();
+            var articleViewModel = new ArticleViewModel(_context.ArticleCategories.ToList())
+            {
+                Name = articleName,
+                Text = articleText,
+                CategoryId = articleCategory.Id.ToString()
+            };
             return articleViewModel;
         }
 
         private Article CreateArticle(string articleName, string articleText, ArticleCategory articleCategory)
         {
-            ArticleViewModel articleViewModel = CreateArticleViewModel(articleName, articleText, articleCategory);
+            var articleViewModel = CreateArticleViewModel(articleName, articleText, articleCategory);
             var createArticleResult = _articlesController.Create(articleViewModel) as RedirectToActionResult;
             Assert.NotNull(createArticleResult);
             Assert.Equal("Index", createArticleResult.ActionName);
@@ -107,14 +114,14 @@ namespace App.Tests.Controllers
         }
 
         [Fact]
-        public async void IndexArticleViewResultNotNull()
+        public async Task IndexArticleViewResultNotNull()
         {
-            ViewResult result = await _articlesController.Index() as ViewResult;
+            var result = await _articlesController.Index() as ViewResult;
             Assert.NotNull(result);
         }
 
         [Fact]
-        public async void IndexArticleViewDataNotNull()
+        public async Task IndexArticleViewDataNotNull()
         {
             const string categoryName = "Category 1";
             const string articleName = "Article 1";
@@ -123,7 +130,7 @@ namespace App.Tests.Controllers
             Assert.NotNull(articleCategory);
             var newArticle = CreateArticle(articleName, articleText, articleCategory);
             Assert.NotNull(newArticle);
-            ViewResult indexResult = await _articlesController.Index() as ViewResult;
+            var indexResult = await _articlesController.Index() as ViewResult;
             Assert.NotNull(indexResult);
             var articleList = indexResult.Model as IEnumerable<Article>;
             Assert.NotNull(articleList);
@@ -155,7 +162,7 @@ namespace App.Tests.Controllers
         }
 
         [Fact]
-        public async void DetailsArticleViewResultNotNull()
+        public async Task DetailsArticleViewResultNotNull()
         {
             const string categoryName = "Category 3";
             const string articleName = "Article 3";
@@ -175,7 +182,7 @@ namespace App.Tests.Controllers
         }
 
         [Fact]
-        public async void EditArticleViewResultNotNull()
+        public async Task EditArticleViewResultNotNull()
         {
             const string categoryName = "Category 4";
             const string articleName = "Article 4";
@@ -227,7 +234,7 @@ namespace App.Tests.Controllers
         }
 
         [Fact]
-        public async void DeleteArticleViewResultNotNull()
+        public async Task DeleteArticleViewResultNotNull()
         {
             const string categoryName = "Category 6";
             const string articleName = "Article 6";
@@ -247,7 +254,7 @@ namespace App.Tests.Controllers
         }
 
         [Fact]
-        public async void DeleteConfirmedArticleViewResultNotNull()
+        public async Task DeleteConfirmedArticleViewResultNotNull()
         {
             const string categoryName = "Category 7";
             const string articleName = "Article 7";
@@ -264,9 +271,8 @@ namespace App.Tests.Controllers
             Assert.Null(deletedArticle);
         }
 
-        public void Dispose()
-        {
-            _context.Database.EnsureDeleted();
-        }
+#pragma warning disable CA1816
+        public void Dispose() => _context.Database.EnsureDeleted();
+#pragma warning restore CA1816
     }
 }

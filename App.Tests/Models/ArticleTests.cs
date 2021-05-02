@@ -12,8 +12,8 @@ namespace App.Tests.Models
     [Collection("Sequential")]
     public class ArticleTests : IDisposable
     {
-        readonly ApplicationDbContext _context;
-        private UserManager<User> _userManager;
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
 
         private const string adminEmail = "root@gmail.com";
         private const string adminName = "root";
@@ -21,7 +21,7 @@ namespace App.Tests.Models
 
         public ArticleTests()
         {
-            IServiceCollection services = new ServiceCollection();
+            var services = new ServiceCollection();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseInMemoryDatabase("ArticleTestDB")
             );
@@ -46,7 +46,7 @@ namespace App.Tests.Models
             _userManager = services.BuildServiceProvider()
                 .GetService<UserManager<User>>();
 
-            User admin = new User { UserName = adminName, Email = adminEmail };
+            var admin = new User { UserName = adminName, Email = adminEmail };
             var result = _userManager.CreateAsync(admin, adminPassword);
         }
 
@@ -123,7 +123,7 @@ namespace App.Tests.Models
         }
 
         [Fact]
-        public async void DeleteArticleTest()
+        public void DeleteArticleTest()
         {
             const string categoryName = "Category 3";
             const string articleName = "Article 3";
@@ -136,14 +136,13 @@ namespace App.Tests.Models
             Assert.NotNull(removeArticleResult);
             var entitiesCount = _context.SaveChanges();
             Assert.Equal(1, entitiesCount);
-            var deletedArticle = await _context.Articles
-                .FirstOrDefaultAsync(m => m.Name == articleName);
+            var deletedArticle = _context.Articles
+                .FirstOrDefault(m => m.Name == articleName);
             Assert.Null(deletedArticle);
         }
 
-        public void Dispose()
-        {
-            _context.Database.EnsureDeleted();
-        }
+#pragma warning disable CA1816
+        public void Dispose() => _context.Database.EnsureDeleted();
+#pragma warning restore CA1816
     }
 }

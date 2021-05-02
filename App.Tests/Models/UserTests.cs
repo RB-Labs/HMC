@@ -11,11 +11,11 @@ namespace App.Tests.Models
     [Collection("Sequential")]
     public class UserTests : IDisposable
     {
-        ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
         public UserTests()
         {
-            IServiceCollection services = new ServiceCollection();
+            var services = new ServiceCollection();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseInMemoryDatabase("UserTestDB")
             );
@@ -97,9 +97,8 @@ namespace App.Tests.Models
             Assert.Null(deletedUser);
         }
 
-        public void Dispose()
-        {
-            _context.Database.EnsureDeleted();
-        }
+#pragma warning disable CA1816
+        public void Dispose() => _context.Database.EnsureDeleted();
+#pragma warning restore CA1816
     }
 }

@@ -9,20 +9,21 @@ namespace App.Tests.Controllers
     [Collection("Sequential")]
     public class HomeControllerTests
     {
-        private ILogger<HomeController> _logger;
+        private readonly HomeController _homeController;
         public HomeControllerTests()
         {
             var serviceProvider = new ServiceCollection()
                 .AddLogging()
                 .BuildServiceProvider();
-            var factory = serviceProvider.GetService<ILoggerFactory>();
-            _logger = factory.CreateLogger<HomeController>();
+            var logger = serviceProvider
+                .GetService<ILoggerFactory>()
+                .CreateLogger<HomeController>();
+            _homeController = new HomeController(logger);
         }
         [Fact]
         public void IndexViewResultNotNull()
         {
-            HomeController controller = new HomeController(_logger);
-            ViewResult result = controller.Index() as ViewResult;
+            var result = _homeController.Index() as ViewResult;
             Assert.NotNull(result);
         }
     }
