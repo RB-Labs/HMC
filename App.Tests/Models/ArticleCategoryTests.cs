@@ -1,9 +1,10 @@
-﻿using System;
-using Xunit;
-using App.Data;
+﻿using App.Data;
 using App.Models;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Linq;
+using Xunit;
 
 namespace App.Tests.Models
 {
@@ -14,76 +15,66 @@ namespace App.Tests.Models
 
         public ArticleCategoryTests()
         {
-            var serviceProvider = new ServiceCollection()
-                .AddEntityFrameworkSqlServer()
-                .BuildServiceProvider();
+            IServiceCollection services = new ServiceCollection();
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseInMemoryDatabase("ArticleTestDB")
+            );
+            _context = services.BuildServiceProvider()
+                .GetService<ApplicationDbContext>();
+            _context.Database.EnsureCreated();
+        }
 
-            var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-
-            builder.UseInMemoryDatabase("ArticleCategoryTestDB");
-
-            _context = new ApplicationDbContext(builder.Options);
-
+        private ArticleCategory CreateArcticleCategory(string categoryName)
+        {
+            var addCategoryResult = _context.ArticleCategories.Add(new ArticleCategory
+            {
+                Name = categoryName
+            });
+            Assert.NotNull(addCategoryResult);
+            int entitiesCount = _context.SaveChanges();
+            Assert.Equal(1, entitiesCount);
+            return _context.ArticleCategories
+                .FirstOrDefault(m => m.Name == categoryName);
         }
 
         [Fact]
-        public async void CreateArticleCategoryTest()
+        public void CreateArticleCategoryTest()
         {
-            var addResult = _context.ArticleCategories.Add(new ArticleCategory
-            {
-                Name = "Category 1"
-            });
-            Assert.NotNull(addResult);
-            int entitiesCount = _context.SaveChanges();
-            Assert.Equal(1, entitiesCount);
-            var articleCategory = await _context.ArticleCategories
-                .FirstOrDefaultAsync(m => m.Name == "Category 1");
+            const string categoryName = "Category 1";
+            var articleCategory = CreateArcticleCategory(categoryName);
             Assert.NotNull(articleCategory);
         }
 
         [Fact]
-        public async void UpdateArticleCategoryTest()
+        public void UpdateArticleCategoryTest()
         {
-            var addResult = _context.ArticleCategories.Add(new ArticleCategory
-            {
-                Name = "Category 2"
-            });
-            Assert.NotNull(addResult);
-            int entitiesCount = _context.SaveChanges();
+            const string categoryName = "Category 2";
+            const string newCategoryName = "New Category 2";
+            var newArticleCategory = CreateArcticleCategory(categoryName);
+            Assert.NotNull(newArticleCategory);
+            newArticleCategory.Name = newCategoryName;
+            var updateArticleCategoryResult = _context.ArticleCategories.Update(newArticleCategory);
+            Assert.NotNull(updateArticleCategoryResult);
+            var entitiesCount = _context.SaveChanges();
             Assert.Equal(1, entitiesCount);
-            var articleCategory = await _context.ArticleCategories
-                .FirstOrDefaultAsync(m => m.Name == "Category 2");
-            Assert.NotNull(articleCategory);
-            articleCategory.Name = "Category 3";
-            var updateResult = _context.ArticleCategories.Update(articleCategory);
-            Assert.NotNull(updateResult);
-            entitiesCount = _context.SaveChanges();
-            Assert.Equal(1, entitiesCount);
-            articleCategory = await _context.ArticleCategories
-                .FirstOrDefaultAsync(m => m.Name == "Category 3");
-            Assert.NotNull(articleCategory);
+            var updatedArticleCategory = _context.ArticleCategories
+                .FirstOrDefault(m => m.Name == newCategoryName);
+            Assert.NotNull(updatedArticleCategory);
         }
 
         [Fact]
         public async void DeleteArticleCategoryTest()
         {
-            var addResult = _context.ArticleCategories.Add(new ArticleCategory
-            {
-                Name = "Category 4"
-            });
-            Assert.NotNull(addResult);
-            int entitiesCount = _context.SaveChanges();
+            const string categoryName = "Category 3";
+            var newArticleCategory = CreateArcticleCategory(categoryName);
+            Assert.NotNull(newArticleCategory);
+            var removeArticleCategoryResult = _context.ArticleCategories.Remove(newArticleCategory);
+            Assert.NotNull(removeArticleCategoryResult);
+            var entitiesCount = _context.SaveChanges();
             Assert.Equal(1, entitiesCount);
-            var articleCategory = await _context.ArticleCategories
-                .FirstOrDefaultAsync(m => m.Name == "Category 4");
-            Assert.NotNull(articleCategory);
-            var removeResult = _context.ArticleCategories.Remove(articleCategory);
-            Assert.NotNull(removeResult);
-            entitiesCount = _context.SaveChanges();
-            Assert.Equal(1, entitiesCount);
-            articleCategory = await _context.ArticleCategories
-                .FirstOrDefaultAsync(m => m.Name == "Category 4");
-            Assert.Null(articleCategory);
+            var deletedArticleCategory = await _context.ArticleCategories
+                .FirstOrDefaultAsync(m => m.Name == categoryName);
+            Assert.Null(deletedArticleCategory);
         }
 
         public void Dispose()
