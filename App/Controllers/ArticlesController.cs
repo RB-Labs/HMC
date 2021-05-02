@@ -158,7 +158,7 @@ namespace App.Controllers
 
         private Article ToArticle(ArticleViewModel model)
         {
-            var currentUser = _context.Users.Single(x => x.UserName == User.Identity.Name);
+            var currentUser = _context.Users.Single(x => x.Email == User.Identity.Name);
             var categoryId = Convert.ToInt32(model.CategoryId);
             var category = _context.ArticleCategories.Single(x => x.Id == categoryId);
             return new Article
@@ -178,6 +178,7 @@ namespace App.Controllers
             model.Name = article.Name;
             model.Text = article.Text;
             model.CategoryId = article.Category.Id.ToString();
+            model.Author = article.Author.UserName;
             return model;
         }
     }

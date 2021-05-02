@@ -24,6 +24,7 @@ namespace App.ViewModels
         public string Text { get; set; }
         [Display(Name = "Category")]
         public string CategoryId { get; set; }
+        public string Author { get; set; }
         public IEnumerable<SelectListItem> Categories { get; set; }
     }
 }
