@@ -1,12 +1,15 @@
 ﻿using App.Controllers;
 using App.Data;
 using App.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using Xunit;
 
 namespace App.Tests.Controllers
@@ -15,40 +18,85 @@ namespace App.Tests.Controllers
     public class ArticleCategoriesControllerTests : IDisposable
     {
         readonly ApplicationDbContext _context;
+        private readonly ArticleCategoriesController _articleCategoriesController;
+        private UserManager<User> _userManager;
+
+        private const string adminEmail = "root@gmail.com";
+        private const string adminName = "root";
+        private const string adminPassword = "123456";
         public ArticleCategoriesControllerTests()
         {
-            var serviceProvider = new ServiceCollection()
-                .AddEntityFrameworkSqlServer()
-                .BuildServiceProvider();
+            IServiceCollection services = new ServiceCollection();
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseInMemoryDatabase("ArticleCategoriesTestDB")
+            );
+            _context = services.BuildServiceProvider()
+                .GetService<ApplicationDbContext>();
+            _context.Database.EnsureCreated();
 
-            var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            services.AddIdentityCore<User>(options =>
+                {
+                    options.Password.RequiredLength = 6;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireDigit = false;
+                    options.SignIn.RequireConfirmedAccount = false;
+                    options.SignIn.RequireConfirmedEmail = false;
+                    options.SignIn.RequireConfirmedPhoneNumber = false;
+                })
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddUserManager<UserManager<User>>();
 
-            builder.UseInMemoryDatabase("ArticleCategoryTestDB");
+            _userManager = services.BuildServiceProvider()
+                .GetService<UserManager<User>>();
 
-            _context = new ApplicationDbContext(builder.Options);
+            User admin = new User { UserName = adminName, Email = adminEmail };
+            var result = _userManager.CreateAsync(admin, adminPassword);
+            var currentUser = _context.Users.Single(x => x.UserName == admin.UserName);
+
+            ControllerContext controllerContext = null;
+            if (result.Result.Succeeded)
+            {
+                var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, adminName),
+                    new Claim(ClaimTypes.Name, adminEmail)
+                }));
+                controllerContext = new ControllerContext()
+                {
+                    HttpContext = new DefaultHttpContext { User = user }
+                };
+            }
+
+            _articleCategoriesController = new ArticleCategoriesController(_context);
+            _articleCategoriesController.ControllerContext = controllerContext;
+        }
+
+        private ArticleCategory CreateArticleCategory(string categoryName)
+        {
+            var newArticleCategory = new ArticleCategory { Name = categoryName };
+            var createArticleCategoryResult = _articleCategoriesController.Create(newArticleCategory) as RedirectToActionResult;
+            Assert.NotNull(createArticleCategoryResult);
+            Assert.Equal("Index", createArticleCategoryResult.ActionName);
+            return _context.ArticleCategories
+                .FirstOrDefault(x => x.Name == categoryName);
         }
 
         [Fact]
         public async void IndexArticleCategoryViewResultNotNull()
         {
-            ArticleCategoriesController controller = new(_context);
-            ViewResult result = await controller.Index() as ViewResult;
+            ViewResult result = await _articleCategoriesController.Index() as ViewResult;
             Assert.NotNull(result);
         }
 
         [Fact]
         public async void IndexArticleCategoryViewDataNotNull()
         {
-            const string categoryName = "Controller Category 1";
-            ArticleCategoriesController controller = new(_context);
-            ArticleCategory newArticleCategory = new() { Name = categoryName };
-            var createResult = controller.Create(newArticleCategory) as RedirectToActionResult;
-            Assert.NotNull(createResult);
-            Assert.Equal("Index", createResult.ActionName);
-            var articleCategory = await _context.ArticleCategories
-                .FirstOrDefaultAsync(x => x.Name == categoryName);
-            Assert.NotNull(articleCategory);
-            ViewResult indexResult = await controller.Index() as ViewResult;
+            const string categoryName = "Category 1";
+            var newArticleCategory = CreateArticleCategory(categoryName);
+            Assert.NotNull(newArticleCategory);
+            ViewResult indexResult = await _articleCategoriesController.Index() as ViewResult;
             Assert.NotNull(indexResult);
             var categoryList = indexResult.Model as IEnumerable<ArticleCategory>;
             Assert.NotNull(categoryList);
@@ -60,38 +108,27 @@ namespace App.Tests.Controllers
         [Fact]
         public void CreateArticleCategoryViewResultNotNull()
         {
-            ArticleCategoriesController controller = new(_context);
-            var result = controller.Create() as ViewResult;
+            var result = _articleCategoriesController.Create() as ViewResult;
             Assert.NotNull(result);
         }
 
         [Fact]
         public void CreateArticleCategoryViewDataNotNull()
         {
-            const string categoryName = "Controller Category 2";
-            ArticleCategoriesController controller = new(_context);
-            ArticleCategory newArticleCategory = new() { Name = categoryName };
-            var result = controller.Create(newArticleCategory) as RedirectToActionResult;
-            Assert.NotNull(result);
-            Assert.Equal("Index", result.ActionName);
-            var articleCategory = _context.ArticleCategories
-                .FirstOrDefault(x => x.Name == categoryName);
-            Assert.NotNull(articleCategory);
+            const string categoryName = "Category 2";
+            var newArticleCategory = CreateArticleCategory(categoryName);
+            Assert.NotNull(newArticleCategory);
         }
 
         [Fact]
         public async void DetailsArticleCategoryViewResultNotNull()
         {
-            const string categoryName = "Controller Category 3";
-            ArticleCategoriesController controller = new(_context);
-            ArticleCategory newArticleCategory = new() { Name = categoryName };
-            var createResult = controller.Create(newArticleCategory) as RedirectToActionResult;
-            Assert.NotNull(createResult);
-            Assert.Equal("Index", createResult.ActionName);
+            const string categoryName = "Category 3";
+            var newArticleCategory = CreateArticleCategory(categoryName);
+            Assert.NotNull(newArticleCategory);
             var articleCategory = _context.ArticleCategories
-                .FirstOrDefault(x => x.Name == categoryName);
-            Assert.NotNull(articleCategory);
-            var detailsResult = await controller.Details(articleCategory.Id) as ViewResult;
+               .FirstOrDefault(x => x.Name == categoryName);
+            var detailsResult = await _articleCategoriesController.Details(articleCategory.Id) as ViewResult;
             Assert.NotNull(detailsResult);
             var articleCategoryDetails = detailsResult.Model as ArticleCategory;
             Assert.NotNull(articleCategoryDetails);
@@ -102,17 +139,14 @@ namespace App.Tests.Controllers
         public async void EditArticleCategoryViewResultNotNull()
         {
             const string categoryName = "Controller Category 4";
-            ArticleCategoriesController controller = new(_context);
-            ArticleCategory newArticleCategory = new() { Name = categoryName };
-            var createResult = controller.Create(newArticleCategory) as RedirectToActionResult;
-            Assert.NotNull(createResult);
-            Assert.Equal("Index", createResult.ActionName);
+            var newArticleCategory = CreateArticleCategory(categoryName);
+            Assert.NotNull(newArticleCategory);
             var articleCategory = _context.ArticleCategories
                 .FirstOrDefault(x => x.Name == categoryName);
             Assert.NotNull(articleCategory);
-            var result = await controller.Edit(articleCategory.Id) as ViewResult;
-            Assert.NotNull(result);
-            var articleCategoryDetails = result.Model as ArticleCategory;
+            var editResult = await _articleCategoriesController.Edit(articleCategory.Id) as ViewResult;
+            Assert.NotNull(editResult);
+            var articleCategoryDetails = editResult.Model as ArticleCategory;
             Assert.NotNull(articleCategoryDetails);
             Assert.Equal(categoryName, articleCategoryDetails.Name);
         }
@@ -120,18 +154,15 @@ namespace App.Tests.Controllers
         [Fact]
         public void EditArticleCategoryViewDataNotNull()
         {
-            const string categoryName = "Controller Category 5";
-            const string newCategoryName = "Controller Category 6";
-            ArticleCategoriesController controller = new(_context);
-            ArticleCategory newArticleCategory = new() { Name = categoryName };
-            var createResult = controller.Create(newArticleCategory) as RedirectToActionResult;
-            Assert.NotNull(createResult);
-            Assert.Equal("Index", createResult.ActionName);
+            const string categoryName = "Category 5";
+            const string newCategoryName = "Category 6";
+            var newArticleCategory = CreateArticleCategory(categoryName);
+            Assert.NotNull(newArticleCategory);
             var articleCategory = _context.ArticleCategories
                 .FirstOrDefault(x => x.Name == categoryName);
             Assert.NotNull(articleCategory);
             articleCategory.Name = newCategoryName;
-            var result = controller.Edit(articleCategory.Id, articleCategory) as RedirectToActionResult;
+            var result = _articleCategoriesController.Edit(articleCategory.Id, articleCategory) as RedirectToActionResult;
             Assert.NotNull(result);
             Assert.Equal("Index", result.ActionName);
             articleCategory = _context.ArticleCategories
@@ -145,21 +176,33 @@ namespace App.Tests.Controllers
         [Fact]
         public async void DeleteArticleCategoryViewResultNotNull()
         {
-            const string categoryName = "Controller Category 7";
-            ArticleCategoriesController controller = new(_context);
-            ArticleCategory newArticleCategory = new() { Name = categoryName };
-            var result = controller.Create(newArticleCategory) as RedirectToActionResult;
-            Assert.NotNull(result);
-            Assert.Equal("Index", result.ActionName);
+            const string categoryName = "Category 6";
+            var newArticleCategory = CreateArticleCategory(categoryName);
+            Assert.NotNull(newArticleCategory);
+            var articleCategory = _context.ArticleCategories
+                .FirstOrDefault(x => x.Name == categoryName);
+            var deleteResult = await _articleCategoriesController.Delete(articleCategory.Id) as ViewResult;
+            Assert.NotNull(deleteResult);
+            var articleCategoryDetails = deleteResult.Model as ArticleCategory;
+            Assert.NotNull(articleCategoryDetails);
+            Assert.Equal(categoryName, articleCategoryDetails.Name);
+        }
+
+        [Fact]
+        public async void DeleteConfirmedArticleCategoryViewResultNotNull()
+        {
+            const string categoryName = "Category 7";
+            var newArticleCategory = CreateArticleCategory(categoryName);
+            Assert.NotNull(newArticleCategory);
             var articleCategory = _context.ArticleCategories
                 .FirstOrDefault(x => x.Name == categoryName);
             Assert.NotNull(articleCategory);
-            result = await controller.DeleteConfirmed(articleCategory.Id) as RedirectToActionResult;
-            Assert.NotNull(result);
-            Assert.Equal("Index", result.ActionName);
-            articleCategory = _context.ArticleCategories
+            var deleteResult = await _articleCategoriesController.DeleteConfirmed(articleCategory.Id) as RedirectToActionResult;
+            Assert.NotNull(deleteResult);
+            Assert.Equal("Index", deleteResult.ActionName);
+            var deletedArticleCategory = _context.ArticleCategories
                 .FirstOrDefault(x => x.Name == categoryName);
-            Assert.Null(articleCategory);
+            Assert.Null(deletedArticleCategory);
         }
 
         public void Dispose()

@@ -1,5 +1,6 @@
 ﻿using App.Data;
 using App.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -38,11 +39,13 @@ namespace App.Controllers
             return View(articleCategory);
         }
 
+        [Authorize]
         public IActionResult Create()
         {
             return View();
         }
 
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create([Bind("Id,Name")] ArticleCategory articleCategory)
@@ -56,6 +59,7 @@ namespace App.Controllers
             return View(articleCategory);
         }
 
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -71,6 +75,7 @@ namespace App.Controllers
             return View(articleCategory);
         }
 
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, [Bind("Id,Name")] ArticleCategory articleCategory)
@@ -103,6 +108,7 @@ namespace App.Controllers
             return View(articleCategory);
         }
 
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -120,6 +126,7 @@ namespace App.Controllers
             return View(articleCategory);
         }
 
+        [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
