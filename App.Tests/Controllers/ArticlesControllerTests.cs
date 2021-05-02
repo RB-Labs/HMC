@@ -55,7 +55,6 @@ namespace App.Tests.Controllers
 
             User admin = new User { UserName = adminName, Email = adminEmail };
             var result = _userManager.CreateAsync(admin, adminPassword);
-            var currentUser = _context.Users.Single(x => x.UserName == admin.UserName);
 
             ControllerContext controllerContext = null;
             if (result.Result.Succeeded)
