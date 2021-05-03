@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Xunit;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace App.Tests.Controllers
 {
@@ -18,8 +20,19 @@ namespace App.Tests.Controllers
             var logger = serviceProvider
                 .GetService<ILoggerFactory>()
                 .CreateLogger<HomeController>();
-            _homeController = new HomeController(logger);
+            var controllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal()
+                }
+            };
+            _homeController = new HomeController(logger)
+            {
+                ControllerContext = controllerContext
+            };
         }
+
         [Fact]
         public void IndexViewResultNotNull()
         {
