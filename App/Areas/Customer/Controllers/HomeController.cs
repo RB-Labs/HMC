@@ -2,11 +2,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace App.Areas.Admin.Controllers
+namespace App.Areas.Customer.Controllers
 {
-
-    [Area("Admin")]
-    [Authorize(Roles = UserRole.Internal)]
+    [Area("Customer")]
+    [Authorize(Roles = UserRole.Customer)]
     public class HomeController : Controller
     {
         public IActionResult Index()

@@ -20,6 +20,10 @@ namespace App.Controllers
             {
                 return RedirectToAction("Index", new { Area = "Admin" });
             }
+            else if (User.IsInRole(UserRole.Customer))
+            {
+                return RedirectToAction("Index", new { Area = "Customer" });
+            }
             return View();
         }
 
