@@ -8,22 +8,19 @@ namespace App
     {
         private const string adminEmail = "root@gmail.com";
         private const string adminInitialPassword = "123456";
-        private const string adminRole = "admin";
-        private const string managerRole = "manager";
-        private const string customerRole = "customer";
         public static async Task InitializeAsync(UserManager<User> userManager, RoleManager<UserRole> roleManager)
         {
-            if (await roleManager.FindByNameAsync(adminRole) == null)
+            if (await roleManager.FindByNameAsync(UserRole.Admin) == null)
             {
-                await roleManager.CreateAsync(new UserRole(adminRole));
+                await roleManager.CreateAsync(new UserRole(UserRole.Admin));
             }
-            if (await roleManager.FindByNameAsync(managerRole) == null)
+            if (await roleManager.FindByNameAsync(UserRole.Manager) == null)
             {
-                await roleManager.CreateAsync(new UserRole(managerRole));
+                await roleManager.CreateAsync(new UserRole(UserRole.Manager));
             }
-            if (await roleManager.FindByNameAsync(customerRole) == null)
+            if (await roleManager.FindByNameAsync(UserRole.Customer) == null)
             {
-                await roleManager.CreateAsync(new UserRole(customerRole));
+                await roleManager.CreateAsync(new UserRole(UserRole.Customer));
             }
             if (await userManager.FindByNameAsync(adminEmail) == null)
             {
@@ -31,7 +28,7 @@ namespace App
                 var result = await userManager.CreateAsync(admin, adminInitialPassword);
                 if (result.Succeeded)
                 {
-                    await userManager.AddToRoleAsync(admin, adminRole);
+                    await userManager.AddToRoleAsync(admin, UserRole.Admin);
                 }
             }
         }
