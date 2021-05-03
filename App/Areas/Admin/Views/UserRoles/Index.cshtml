@@ -1,0 +1,29 @@
+﻿@model IEnumerable<App.Models.User>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var user in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => user.Email)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-userid="@user.Id">Edit</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
