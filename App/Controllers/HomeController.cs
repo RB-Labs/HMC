@@ -16,7 +16,7 @@ namespace App.Controllers
 
         public IActionResult Index()
         {
-            if (User.IsInRole(UserRole.Admin))
+            if (User.IsInRole(UserRole.Admin) || User.IsInRole(UserRole.Manager))
             {
                 return RedirectToAction("Index", new { Area = "Admin" });
             }
