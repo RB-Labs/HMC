@@ -60,33 +60,33 @@ jobs:
       run: dotnet test
       working-directory: App.Tests
 
-    - name: Publish
-      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/hmc_app
+#    - name: Publish
+#      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/hmc_app
 
-    - name: Upload artifact for deployment job
-      uses: actions/upload-artifact@v2
-      with:
-        name: .net-app
-        path: ${{env.DOTNET_ROOT}}/hmc_app
-  
-  deploy:
-    runs-on: windows-latest
-    needs: build
-    environment:
-      name: 'production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+#    - name: Upload artifact for deployment job
+#      uses: actions/upload-artifact@v2
+#      with:
+#        name: .net-app
+#        path: ${{env.DOTNET_ROOT}}/hmc_app
 
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v2
-        with:
-          name: .net-app
+#  deploy:
+#    runs-on: windows-latest
+#    needs: build
+#    environment:
+#      name: 'production'
+#      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: 'hmc-rb-labs'
-          slot-name: 'production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
-          package: .
+#    steps:
+#      - name: Download artifact from build job
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: .net-app
+
+#      - name: Deploy to Azure Web App
+#        id: deploy-to-webapp
+#        uses: azure/webapps-deploy@v2
+#        with:
+#          app-name: 'hmc-rb-labs'
+#          slot-name: 'production'
+#          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+#          package: .
