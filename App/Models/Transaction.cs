@@ -1,4 +1,6 @@
-﻿namespace App.Models
+﻿using System;
+
+namespace App.Models
 {
     public class Transaction
     {
@@ -6,5 +8,6 @@
         public User Customer { get; set; }
         public double Value { get; set; }
         public string Description { get; set; }
+        public DateTime Date { get; set; }
     }
 }
