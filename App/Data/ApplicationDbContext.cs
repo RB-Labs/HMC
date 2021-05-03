@@ -18,5 +18,7 @@ namespace App.Data
         public DbSet<Transaction> Transactions { get; set; }
 
         public DbSet<Ticket> Tickets { get; set; }
+
+        public DbSet<TicketHistory> TicketHistories { get; set; }
     }
 }
