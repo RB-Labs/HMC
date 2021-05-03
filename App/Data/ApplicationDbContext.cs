@@ -16,5 +16,7 @@ namespace App.Data
         public DbSet<Article> Articles { get; set; }
 
         public DbSet<Transaction> Transactions { get; set; }
+
+        public DbSet<Ticket> Tickets { get; set; }
     }
 }
