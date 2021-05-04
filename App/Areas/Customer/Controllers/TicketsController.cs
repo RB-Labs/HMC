@@ -1,5 +1,6 @@
 ﻿using App.Data;
 using App.Models;
+using App.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -35,15 +36,39 @@ namespace App.Areas.Customer.Controllers
             {
                 return NotFound();
             }
-
             var ticket = _context.Tickets
+                .Include(x => x.Author)
                 .FirstOrDefault(x => x.Id == id);
             if (ticket == null)
             {
                 return NotFound();
             }
 
-            return View(ticket);
+            var ticketHistory = _context.TicketHistories
+                .Include(x => x.Ticket)
+                .Include(x => x.User)
+                .Where(x => x.Ticket.Id == id)
+                .ToList();
+
+            TicketDetailsViewModel model = new()
+            {
+                Id = ticket.Id,
+                Name = ticket.Name,
+                Text = ticket.Text,
+                Author = ticket.Author.UserName,
+                Date = ticket.Date,
+                TicketHistory = ticketHistory
+                    .Select(x => new TicketDetailsViewModel.History
+                    {
+                        User = x.User.UserName,
+                        Description = x.Description,
+                        Status = x.Status.ToString(),
+                        Date = x.Date
+                    })
+                    .ToList()
+            };
+
+            return View(model);
         }
 
         public IActionResult Create()
@@ -57,10 +82,20 @@ namespace App.Areas.Customer.Controllers
         {
             if (ModelState.IsValid)
             {
-                ticket.Author = _context.Users
+                var currentUser = _context.Users
                     .Single(x => x.Email == User.Identity.Name);
+                ticket.Author = currentUser;
                 ticket.Date = DateTime.Now;
                 _context.Add(ticket);
+                TicketHistory initialRecord = new()
+                {
+                    Ticket = ticket,
+                    User = currentUser,
+                    Status = TicketStatus.New,
+                    Date = DateTime.Now,
+                    Description = "Ticket created"
+                };
+                _context.Add(initialRecord);
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
