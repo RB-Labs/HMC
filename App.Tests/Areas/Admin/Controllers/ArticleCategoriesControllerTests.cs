@@ -127,21 +127,6 @@ namespace App.Tests.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task DetailsArticleCategoryViewResultNotNull()
-        {
-            const string categoryName = "Category 3";
-            var newArticleCategory = CreateArticleCategory(categoryName);
-            Assert.NotNull(newArticleCategory);
-            var articleCategory = _context.ArticleCategories
-               .FirstOrDefault(x => x.Name == categoryName);
-            var detailsResult = await _articleCategoriesController.Details(articleCategory.Id) as ViewResult;
-            Assert.NotNull(detailsResult);
-            var articleCategoryDetails = detailsResult.Model as ArticleCategory;
-            Assert.NotNull(articleCategoryDetails);
-            Assert.Equal(categoryName, articleCategoryDetails.Name);
-        }
-
-        [Fact]
         public async Task EditArticleCategoryViewResultNotNull()
         {
             const string categoryName = "Controller Category 4";
