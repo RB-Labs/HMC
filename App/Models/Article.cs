@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace App.Models
 {
@@ -9,6 +10,7 @@ namespace App.Models
         public string Text { get; set; }
         public ArticleCategory Category { get; set; }
         public User Author { get; set; }
+        [Display(Name = "Date")]
         public DateTime CreationDate { get; set; }
     }
 }
