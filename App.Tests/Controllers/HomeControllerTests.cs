@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using Xunit;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
+using App.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace App.Tests.Controllers
 {
@@ -14,12 +16,14 @@ namespace App.Tests.Controllers
         private readonly HomeController _homeController;
         public HomeControllerTests()
         {
-            var serviceProvider = new ServiceCollection()
-                .AddLogging()
-                .BuildServiceProvider();
-            var logger = serviceProvider
-                .GetService<ILoggerFactory>()
-                .CreateLogger<HomeController>();
+            var services = new ServiceCollection();
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseInMemoryDatabase("HomeControllerTestDB_Admin")
+            );
+            var context = services.BuildServiceProvider()
+                .GetService<ApplicationDbContext>();
+            context.Database.EnsureCreated();
+
             var controllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext
@@ -27,7 +31,7 @@ namespace App.Tests.Controllers
                     User = new ClaimsPrincipal()
                 }
             };
-            _homeController = new HomeController(logger)
+            _homeController = new HomeController(context)
             {
                 ControllerContext = controllerContext
             };

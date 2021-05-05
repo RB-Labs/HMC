@@ -1,17 +1,21 @@
-﻿using App.Models;
+﻿using App.Data;
+using App.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using System.Linq;
 
 namespace App.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        const int _lastNewsCount = 5;
+        private readonly ApplicationDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ApplicationDbContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
         public IActionResult Index()
@@ -24,7 +28,11 @@ namespace App.Controllers
             {
                 return RedirectToAction("Index", new { Area = "Customer" });
             }
-            return View();
+            var articles = _context.Articles
+                .OrderByDescending(x => x.CreationDate)
+                .Take(_lastNewsCount)
+                .ToList();
+            return View(articles);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
