@@ -7,6 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 
 namespace App
 {
@@ -22,7 +25,7 @@ namespace App
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
+                options.UseSqlite(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -42,8 +45,30 @@ namespace App
             services.AddControllersWithViews();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            using (var serviceScope = app.ApplicationServices
+                .GetService<IServiceScopeFactory>()
+                .CreateScope())
+            {
+                try
+                {
+                    var dbContext = serviceScope.ServiceProvider
+                        .GetRequiredService<ApplicationDbContext>();
+                    dbContext.Database.EnsureCreated();
+                    var userManager = serviceScope.ServiceProvider
+                        .GetRequiredService<UserManager<User>>();
+                    var rolesManager = serviceScope.ServiceProvider
+                        .GetRequiredService<RoleManager<UserRole>>();
+                    await RoleInitializer.InitializeAsync(userManager, rolesManager);
+                }
+                catch (Exception ex)
+                {
+                    var logger = serviceScope.ServiceProvider
+                        .GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred while seeding the database.");
+                }
+            }
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
