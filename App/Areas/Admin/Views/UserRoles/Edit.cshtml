@@ -2,11 +2,10 @@
 @model App.ViewModels.ChangeRoleViewModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Управление ролями пользователя";
 }
 
-<h1>Edit</h1>
-
+<h1>Управление ролями пользователя</h1>
 <h4>@Model.UserEmail</h4>
 <hr />
 <div class="row">
@@ -24,11 +23,11 @@
                     />@role.Name<br />
                  }
             </div>
-            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Назад к списку пользователей</a>
 </div>

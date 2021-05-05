@@ -1,7 +1,7 @@
 ﻿@model App.Models.Article
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Удаление статьи";
 }
 
 <h1>Delete</h1>
@@ -11,41 +11,26 @@
     <h4>Article</h4>
     <hr />
     <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
+        <dt class="col-sm-2">Название</dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Name)
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Text)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Text)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Category.Name)
-        </dt>
+        <dt class="col-sm-2">Категория</dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Category.Name)
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Author.UserName)
-        </dt>
+        <dt class="col-sm-2">Автор</dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Author.UserName)
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.CreationDate)
-        </dt>
+        <dt class="col-sm-2">Дата создания</dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.CreationDate)
         </dd>
     </dl>
-    
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <input type="submit" value="Удалить" class="btn btn-danger" /> |
+        <a asp-action="Index">Назад к списку статей</a>
     </form>
 </div>

@@ -1,41 +1,31 @@
 ﻿@model App.Models.Article
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Просмотр статьи";
 }
 
-<h1>Details</h1>
-
+<h1>Просмотр статьи</h1>
 <div>
-    <h4>Article</h4>
     <hr />
     <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
+        <dt class="col-sm-2">Название</dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Name)
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Text)
-        </dt>
+        <dt class="col-sm-2">Текст статьи</dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Text)
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Category.Name)
-        </dt>
+        <dt class="col-sm-2">Категория</dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Category.Name)
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Author.UserName)
-        </dt>
+        <dt class="col-sm-2">Автор</dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Author.UserName)
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Назад к списку статей</a>
 </div>

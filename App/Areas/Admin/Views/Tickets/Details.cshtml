@@ -1,55 +1,54 @@
 ﻿@model App.ViewModels.TicketDetailsViewModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Подробный просмотр заявки";
 }
 
-<h1>Details</h1>
-
+<h1>Подробный просмотр заявки</h1>
 <div>
-    <h4>Ticket</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
+            Название
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Name)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Text)
+            Описание
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Text)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Date)
+            Дата создания
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Date)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Author)
+            Автор
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Author)
         </dd>
     </dl>
 </div>
+<h4>История изменения заявки</h4>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.TicketHistory[0].User)
+                Менеджер
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TicketHistory[0].Description)
+                Описание
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TicketHistory[0].Status)
+                Статус
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TicketHistory[0].Date)
+                Дата изменения
             </th>
         </tr>
     </thead>
@@ -74,6 +73,6 @@
     </tbody>
 </table>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Редактировать</a> |
+    <a asp-action="Index">Назад к списку заявок</a>
 </div>

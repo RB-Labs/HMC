@@ -1,26 +1,17 @@
 ﻿@model IEnumerable<App.Models.Article>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Новости и информация";
 }
 
-<h1>Index</h1>
-
+<h1>Новости и информация</h1>
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Category.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Author.UserName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreationDate)
-            </th>
+            <th>Название</th>
+            <th>Категория</th>
+            <th>Автор</th>
+            <th>Дата публикации</th>
             <th></th>
         </tr>
     </thead>
@@ -40,7 +31,7 @@
                 @Html.DisplayFor(modelItem => item.CreationDate)
             </td>
             <td>
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                <a asp-action="Details" asp-route-id="@item.Id">Подробности</a>
             </td>
         </tr>
 }

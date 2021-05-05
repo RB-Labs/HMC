@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<App.Models.Transaction>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Список транзакций";
 }
 
-<h1>Index</h1>
+<h1>Список транзакций</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Создать транзакцию</a>
 </p>
 <table class="table">
     <thead>
@@ -15,18 +15,10 @@
             <th>
                 @Html.DisplayNameFor(model => model.Id)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Customer.UserName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Value)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Date)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
+            <th>Идентификатор клиента</th>
+            <th>Значение</th>
+            <th>Дата создания</th>
+            <th>Описание</th>
         </tr>
     </thead>
     <tbody>

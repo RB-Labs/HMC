@@ -1,26 +1,19 @@
 ﻿@model IEnumerable<App.Models.Transaction>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Список транзакций";
 }
 
-<h1>Index</h1>
-
+<h1>Список моих транзакций</h1>
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Создать новую транзакцию</a>
 </p>
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Value)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Date)
-            </th>
+            <th>Значение</th>
+            <th>Описание</th>
+            <th>Дата создания</th>
         </tr>
     </thead>
     <tbody>
@@ -40,5 +33,5 @@
     </tbody>
 </table>
 <p>
-    <h4>Balance: @ViewBag.Balance</h4>
+    <h4>Мой текущий баланс: @ViewBag.Balance</h4>
 </p>

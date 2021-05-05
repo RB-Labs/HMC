@@ -1,24 +1,22 @@
 ﻿@model App.ViewModels.ArticleViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Создание статьи";
 }
 
-<h1>Create</h1>
-
-<h4>Article</h4>
+<h1>Создание статьи</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+                <label asp-for="Name" class="control-label">Название</label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Text" class="control-label"></label>
+                <label asp-for="Text" class="control-label">Текст</label>
                 <textarea asp-for="Text" class="form-control" ></textarea>
                 <span asp-validation-for="Text" class="text-danger"></span>
             </div>
@@ -26,14 +24,13 @@
                 <select asp-for="CategoryId" asp-items="Model.Categories" class="custom-select"></select>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Создать" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
-
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Назад к списку статей</a>
 </div>
 
 @section Scripts {

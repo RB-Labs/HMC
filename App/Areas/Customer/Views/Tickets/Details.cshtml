@@ -1,47 +1,34 @@
 ﻿@model App.ViewModels.TicketDetailsViewModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Подробности заявки";
 }
 
-<h1>Details</h1>
-
+<h1>Подробности заявки</h1>
 <div>
-    <h4>Ticket</h4>
     <hr />
     <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
+        <dt class="col-sm-2">Название</dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Name)
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Text)
-        </dt>
+        <dt class="col-sm-2">Оисание</dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Text)
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Date)
-        </dt>
+        <dt class="col-sm-2">Дата создания</dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Date)
         </dd>
     </dl>
 </div>
+<h4>История обработки заявки</h4>
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.TicketHistory[0].User)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TicketHistory[0].Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TicketHistory[0].Status)
-            </th>
+            <th>Ответственный менеджер</th>
+            <th>Описание действия</th>
+            <th>Статус</th>
         </tr>
     </thead>
     <tbody>
@@ -62,5 +49,5 @@
     </tbody>
 </table>
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Назад к списку заявок</a>
 </div>

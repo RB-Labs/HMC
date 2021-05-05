@@ -1,16 +1,14 @@
 ﻿@model IEnumerable<App.Models.User>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Управление ролями";
 }
 
 <h1>Index</h1>
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
+            <th>Электронная почта</th>
             <th></th>
         </tr>
     </thead>
@@ -21,7 +19,7 @@
                 @Html.DisplayFor(modelItem => user.Email)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-userid="@user.Id">Edit</a>
+                <a asp-action="Edit" asp-route-userid="@user.Id">Редактировать</a>
             </td>
         </tr>
 }
