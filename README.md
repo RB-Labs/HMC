@@ -1,4 +1,4 @@
-# House management company
+# Жилищно-управляющая компания
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
