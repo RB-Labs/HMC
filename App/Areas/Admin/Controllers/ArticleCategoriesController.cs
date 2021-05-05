@@ -25,23 +25,6 @@ namespace App.Areas.Admin.Controllers
             return View(await _context.ArticleCategories.ToListAsync());
         }
 
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var articleCategory = await _context.ArticleCategories
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (articleCategory == null)
-            {
-                return NotFound();
-            }
-
-            return View(articleCategory);
-        }
-
         public IActionResult Create()
         {
             return View();
