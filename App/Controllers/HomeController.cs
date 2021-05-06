@@ -29,6 +29,7 @@ namespace App.Controllers
                 return RedirectToAction("Index", new { Area = "Customer" });
             }
             var articles = _context.Articles
+                .Include(x => x.Category)
                 .OrderByDescending(x => x.CreationDate)
                 .Take(_lastNewsCount)
                 .ToList();
