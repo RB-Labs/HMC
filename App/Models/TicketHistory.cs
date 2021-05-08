@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace App.Models
 {
@@ -16,10 +17,23 @@ namespace App.Models
     public class TicketHistory
     {
         public int Id { get; set; }
+
+        [Required]
         public Ticket Ticket { get; set; }
+
+        [Required]
         public User User { get; set; }
+
+        [Display(Name = "Статус")]
+        [Required]
         public TicketStatus Status { get; set; }
+
+        [Display(Name = "Дата изменения")]
+        [Required]
         public DateTime Date { get; set; }
+
+        [Display(Name = "Описание")]
+        [Required]
         public string Description { get; set; }
     }
 }

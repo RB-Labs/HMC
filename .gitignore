@@ -7,3 +7,5 @@
 /App.Tests/obj
 /App/ScaffoldingReadMe.txt
 /App/HMC.db
+/App/HMC.db-shm
+/App/HMC.db-wal
