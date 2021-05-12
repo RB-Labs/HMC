@@ -7,7 +7,6 @@ namespace App.Models
     {
         public int Id { get; set; }
 
-        [Required]
         public User Customer { get; set; }
 
         [Display(Name = "Значение баланса")]
@@ -20,7 +19,6 @@ namespace App.Models
         public string Description { get; set; }
 
         [Display(Name = "Дата создания")]
-        [Required]
         public DateTime Date { get; set; }
     }
 }

@@ -18,11 +18,9 @@ namespace App.Models
         public string Text { get; set; }
 
         [Display(Name = "Автор")]
-        [Required]
         public User Author { get; set; }
 
         [Display(Name = "Дата создания")]
-        [Required]
         public DateTime Date { get; set; }
     }
 }

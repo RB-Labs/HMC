@@ -39,7 +39,6 @@ namespace App.ViewModels
         public string CategoryId { get; set; }
 
         [Display(Name = "Автор")]
-        [Required]
         public string Author { get; set; }
 
         public IEnumerable<SelectListItem> Categories { get; set; }
